@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    volumes:
+      - ~/.n8n:/home/node/.n8n
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+  mcp-server:
+    image: node:18
+    command: sh -c "npm install -g @modelcontextprotocol/server-filesystem && mcp-server-filesystem --root /data"
+    volumes:
+      - ./data:/data
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel run --token ${CLOUDFLARE_TOKEN}
+    restart: unless-stopped
